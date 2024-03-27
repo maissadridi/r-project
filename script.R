@@ -1,9 +1,37 @@
 # Load required libraries
 library(quarto)
 library(tidyverse)
-
+library(magrittr)  # Ensure magrittr is loaded
 # Step 1: Import the dataset
 dataset <- read_excel("C:/Users/Maissa/Downloads/exercise_dataset.xlsx")
+library(ggplot2)
+
+# Graphique à barres
+ggplot(data = dataset, aes(x = Gender, fill = Gender)) +
+  geom_bar() +
+  labs(title = "Répartition par genre")
+
+# Graphique linéaire
+ggplot(data = dataset, aes(x = Age, y = 'Actual Weight')) +
+  geom_line() +
+  labs(title = "Évolution du poids en fonction de l'âge")
+
+# Diagramme en boîte
+ggplot(data = dataset, aes(x = Gender, y = BMI, fill = Gender)) +
+  geom_boxplot() +
+  labs(title = "Distribution de l'IMC par genre")
+
+# Graphique à secteurs
+ggplot(data = dataset, aes(x = "", fill ='Weather Conditions')) +
+  geom_bar(width = 1) +
+  coord_polar(theta = "y") +
+  labs(title = "Répartition des conditions météorologiques")
+
+# Graphique en nuage de points
+ggplot(data = dataset, aes(x = Age, y = 'Actual Weight')) +
+  geom_point() +
+  labs(title = "Relation entre l'âge et le poids") +
+  theme_minimal()
 
 # Step 2: Explore the dataset
 print("Exploring the dataset:")
@@ -21,22 +49,23 @@ test_data <- dataset[-train_indices, ]
 
 # Step 5: Choose the predictive modeling technique
 # For demonstration purposes, let's use linear regression
-model <- lm(Actual_Weight ~ Exercise + Age + Gender + Duration + Heart_Rate + BMI + Weather_Conditions + Exercise_Intensity, data = train_data)
+model <- lm(`Actual Weight` ~ Exercise + Age + Gender + Duration + `Heart Rate`+ BMI + `Weather Conditions` + `Exercise Intensity`, data = train_data)
 
 # Step 6: Evaluate the model
 predictions <- predict(model, newdata = test_data)
-rmse <- sqrt(mean((test_data$Actual_Weight - predictions)^2))
-mae <- mean(abs(test_data$Actual_Weight - predictions))
-r_squared <- cor(test_data$Actual_Weight, predictions)^2
+rmse <- sqrt(mean((test_data$`Actual Weight` - predictions)^2))
+mae <- mean(abs(test_data$`Actual Weight` - predictions))
+r_squared <- cor(test_data$`Actual Weight`, predictions)^2
 
 print("Model evaluation:")
 print(paste("RMSE:", rmse))
 print(paste("MAE:", mae))
 print(paste("R-squared:", r_squared))
 
-# Step 7: Generate a report using Quarto
-quarto::quarto_script("report.Rmd") %>%
-  quarto::quarto_pdf(output = "report.pdf")
+
+# Render the Quarto script to a PDF file
+quarto::quarto_render("report.Rmd", output_format = "pdf_document", output_file = "report.pdf")
+
 
 # Step 8: Prepare a PowerPoint presentation
 # You can create a PowerPoint file manually or use additional libraries like officer or powerpointR to automate this process.
